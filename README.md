@@ -1,13 +1,14 @@
 # AzulX-NPOI
-#### 对NPOI的封装，Core2.0以上
+
+### 对NPOI的封装，Core2.0以上
 
 #### 进一步封装NPOI的调用
 
 1. 简单的文件创建以及调用：
 
 ```C#
-using (ExcelFile file = new ExcelFile(filePath)){ .... }
-using (ExcelFile file = new ExcelFile(filePath,ExcelVersion.V2007)){ .... }
+using (ExcelFile file = new ExcelFile(filePath)){ ....; }
+using (ExcelFile file = new ExcelFile(filePath,ExcelVersion.V2007)){ ....; }
 ```
 
 2. 简单的Sheet操作：
@@ -24,7 +25,7 @@ file.Select(100);
 3. 简单的行列位置操作：
 
 ```C#
-MoveTo(int row,int col);	//将操作位置移动到指定位置
+MoveTo(int row,int col);	 //将操作位置移动到指定位置
 MoveToCol(int col);		 //移动到当前行，指定列
 MoveToRow(int row);		 //移动到当前列，指定行
 NextRow(bool isFirstCol = true); //移动到下一行，isFirstCol 是否将位置指向第一列
@@ -34,7 +35,7 @@ PrewRow(bool isFirstCol = true); //移动到上一行，isFirstCol 是否将位�
 4. 简单的赋值操作：
 
 ```C#
-CurrentCell(value,style=null);	//给当前单元格赋值
+CurrentCell(value,style=null);		//给当前单元格赋值
 NextCell(value,style=null);		//给下一个单元格赋值，并将位置移动到下一个单元格
 SpeicalCell(index,value,style=null);	//给指定列的单元格赋值
 ```
