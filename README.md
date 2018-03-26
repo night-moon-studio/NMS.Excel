@@ -96,8 +96,6 @@ using (ExcelFile file = new ExcelFile(filePath))
 
    - 挖掘需求,支持更多的方便操作
 
-     ​
-
 - ### 更新日志
 
    - 2018-03-26：有想法，并完成初步封装。
