@@ -4,14 +4,14 @@
 
 ### 进一步封装NPOI的调用，Core2.0以上
 
-1. 简单的文件创建以及调用：
+#### 简单的文件创建以及调用：
 
 ```C#
 using (ExcelFile file = new ExcelFile(filePath)){ ....; }
 using (ExcelFile file = new ExcelFile(filePath,ExcelVersion.V2007)){ ....; }
 ```
 
-2. 简单的Sheet操作：
+#### 简单的Sheet操作：
 
 ```C#
 
@@ -25,7 +25,7 @@ file.Select(100);
 
 ```
 
-3. 简单的行列位置操作：
+#### 简单的行列位置操作：
 
 ```C#
 MoveTo(int row,int col);	 //将操作位置移动到指定位置
@@ -39,7 +39,7 @@ NextRow(bool isFirstCol = true); //移动到下一行，isFirstCol 是否将位�
 PrewRow(bool isFirstCol = true); //移动到上一行，isFirstCol 是否将位置指向第一列
 ```
 
-4. 简单的赋值操作：
+#### 简单的赋值操作：
 
 ```C#
 CurrentCell(value,style=null);		//给当前单元格赋值
