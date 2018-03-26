@@ -79,6 +79,24 @@ namespace System
             }
         }
         /// <summary>
+        /// 检测Sheet页是否存在
+        /// </summary>
+        /// <param name="index">Sheet页索引</param>
+        /// <returns></returns>
+        public bool HasSheet(int index)
+        {
+            return _sheetIndexs.Contains(index);
+        }
+        /// <summary>
+        /// 检测Sheet页是否存在
+        /// </summary>
+        /// <param name="name">Sheet页名字</param>
+        /// <returns></returns>
+        public bool HashSheet(string name)
+        {
+            return _sheetNames.Contains(name);
+        }
+        /// <summary>
         /// 根据名字选择一个工作表，没有会自动创建
         /// </summary>
         /// <param name="sheetName">sheet的名字</param>
@@ -150,6 +168,48 @@ namespace System
             }
             return this;
         }
+        /// <summary>
+        /// 移动到指定位置
+        /// </summary>
+        /// <param name="x">列</param>
+        /// <param name="y">行</param>
+        /// <returns></returns>
+
+        public ExcelFile MoveTo(int row,int col)
+        {
+            MoveToRow(row);
+            MoveToCol(col);
+            return this;
+        }
+
+        /// <summary>
+        /// 移动到下一行
+        /// </summary>
+        /// <param name="isResetCol">是否将列重置为首个单元格</param>
+        /// <returns></returns>
+        public ExcelFile NextRow(bool isFirstCol = true)
+        {
+            MoveToRow(CurrentRow + 1);
+            if (isFirstCol)
+            {
+                MoveToCol(0);
+            }
+            return this;
+        }
+        /// <summary>
+        /// 移动到上一行
+        /// </summary>
+        /// <param name="isResetCol">是否将列重置为首个单元格</param>
+        /// <returns></returns>
+        public ExcelFile PrewRow(bool isFirstCol = true)
+        {
+            MoveToRow(CurrentRow - 1);
+            if (isFirstCol)
+            {
+                MoveToCol(0);
+            }
+            return this;
+        }
         #endregion
 
         #region 设置单元格
@@ -160,7 +220,7 @@ namespace System
         /// <param name="value">需要填充的值</param>
         /// <param name="style">单元格样式</param>
         /// <returns></returns>
-        public ExcelFile Cell(string value, ICellStyle style = null)
+        public ExcelFile CurrentCell(string value, ICellStyle style = null)
         {
             _col.SetCellValue(value);
             if (style != null)
@@ -175,7 +235,7 @@ namespace System
         /// <param name="value">需要填充的值</param>
         /// <param name="style">单元格样式</param>
         /// <returns></returns>
-        public ExcelFile Cell(bool value, ICellStyle style = null)
+        public ExcelFile CurrentCell(bool value, ICellStyle style = null)
         {
             _col.SetCellValue(value);
             if (style != null)
@@ -190,7 +250,7 @@ namespace System
         /// <param name="value">需要填充的值</param>
         /// <param name="style">单元格样式</param>
         /// <returns></returns>
-        public ExcelFile Cell(double value, ICellStyle style = null)
+        public ExcelFile CurrentCell(double value, ICellStyle style = null)
         {
             _col.SetCellValue(value);
             if (style != null)
@@ -205,7 +265,7 @@ namespace System
         /// <param name="value">需要填充的值</param>
         /// <param name="style">单元格样式</param>
         /// <returns></returns>
-        public ExcelFile Cell(IRichTextString value, ICellStyle style = null)
+        public ExcelFile CurrentCell(IRichTextString value, ICellStyle style = null)
         {
             _col.SetCellValue(value);
             if (style != null)
@@ -352,36 +412,7 @@ namespace System
         }
         #endregion
 
-        #region 设置行
-        /// <summary>
-        /// 移动到下一行
-        /// </summary>
-        /// <param name="isResetCol">是否将列重置为首个单元格</param>
-        /// <returns></returns>
-        public ExcelFile NextRow(bool isResetCol = true)
-        {
-            MoveToRow(CurrentRow + 1);
-            if (isResetCol)
-            {
-                MoveToCol(0);
-            }
-            return this;
-        }
-        /// <summary>
-        /// 移动到上一行
-        /// </summary>
-        /// <param name="isResetCol">是否将列重置为首个单元格</param>
-        /// <returns></returns>
-        public ExcelFile PrewRow(bool isResetCol = true)
-        {
-            MoveToRow(CurrentRow - 1);
-            if (isResetCol)
-            {
-                MoveToCol(0);
-            }
-            return this;
-        }
-        #endregion
+
 
         #region Template , JObject映射
         private Template _template;
