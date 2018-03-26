@@ -1,8 +1,8 @@
 # AzulX-NPOI
 
-### 对NPOI的封装，Core2.0以上
+------
 
-#### 进一步封装NPOI的调用
+### 进一步封装NPOI的调用，Core2.0以上
 
 1. 简单的文件创建以及调用：
 
@@ -57,8 +57,7 @@ SpeicalCell(index,value,style=null);	//给指定列的单元格赋值
 @Content: @StartAt:3 Name@Sex@Age@Description@other  
 @End
 ```
-
-####说明
+#### 说明
 
 - 每一个@End标识都是一个模板的结束，称为模块模板。  
 - @Name作为模块模板缓存的Key.  
