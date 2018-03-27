@@ -64,6 +64,7 @@ namespace System
             RefreshSheets();
         }
 
+        #region Sheet页操作
         /// <summary>
         /// 刷新sheet的名与索引缓存
         /// </summary>
@@ -135,7 +136,7 @@ namespace System
             MoveToCol(0);
             return this;
         }
-
+        #endregion
 
         #region 行列位置操作
         /// <summary>
@@ -416,7 +417,208 @@ namespace System
         }
         #endregion
 
+        #region 获取/设置数据
 
+        public string StringValue
+        {
+            get {
+                MoveToCol(CurrentCol);
+                return _col.StringCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol);
+                _col.SetCellValue(value);
+            }
+            
+        }
+        public bool BoolValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol);
+                return _col.BooleanCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol);
+                _col.SetCellValue(value);
+            }
+        }
+        public DateTime DateValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol);
+                return _col.DateCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol);
+                _col.SetCellValue(value);
+            }
+        }
+        public double NumValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol);
+                return _col.NumericCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol);
+                _col.SetCellValue(value);
+            }
+        }
+        public IRichTextString RichValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol);
+                return _col.RichStringCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol);
+                _col.SetCellValue(value);
+            }
+        }
+
+        public string NextStringValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol+1);
+                return _col.StringCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol+1);
+                _col.SetCellValue(value);
+            }
+
+        }
+        public bool NextBoolValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol + 1);
+                return _col.BooleanCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol + 1);
+                _col.SetCellValue(value);
+            }
+        }
+        public DateTime NextDateValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol + 1);
+                return _col.DateCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol + 1);
+                _col.SetCellValue(value);
+            }
+        }
+        public double NextNumValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol + 1);
+                return _col.NumericCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol + 1);
+                _col.SetCellValue(value);
+            }
+        }
+        public IRichTextString NextRichValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol + 1);
+                return _col.RichStringCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol + 1);
+                _col.SetCellValue(value);
+            }
+        }
+
+        public string PrewStringValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol - 1);
+                return _col.StringCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol - 1);
+                _col.SetCellValue(value);
+            }
+
+        }
+        public bool PrewBoolValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol - 1);
+                return _col.BooleanCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol - 1);
+                _col.SetCellValue(value);
+            }
+        }
+        public DateTime PrewDateValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol - 1);
+                return _col.DateCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol - 1);
+                _col.SetCellValue(value);
+            }
+        }
+        public double PrewNumValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol - 1);
+                return _col.NumericCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol - 1);
+                _col.SetCellValue(value);
+            }
+        }
+        public IRichTextString PrewRichValue
+        {
+            get
+            {
+                MoveToCol(CurrentCol - 1);
+                return _col.RichStringCellValue;
+            }
+            set
+            {
+                MoveToCol(CurrentCol - 1);
+                _col.SetCellValue(value);
+            }
+        }
+        #endregion
 
         #region Template , JObject映射
         private Template _template;
