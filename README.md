@@ -25,8 +25,8 @@ HasSheet(100);
 
 //当Sheet不存在时会自动创建
 
-file.Select("Page1");
-file.Select(100);
+Select("Page1");
+Select(100);
 
 ```
 
@@ -40,6 +40,7 @@ MoveToCol(int col);		 //移动到当前行，指定列
 MoveToRow(int row);		 //移动到当前列，指定行
 
 NextRow(bool isFirstCol = true); //移动到下一行，isFirstCol 是否将位置指向第一列
+
 PrewRow(bool isFirstCol = true); //移动到上一行，isFirstCol 是否将位置指向第一列
 ```
 
@@ -49,6 +50,7 @@ PrewRow(bool isFirstCol = true); //移动到上一行，isFirstCol 是否将位�
 CurrentCell(value,style=null);		//给当前单元格赋值
 
 NextCell(value,style=null);		//给下一个单元格赋值，并将位置移动到下一个单元格
+
 SpeicalCell(index,value,style=null);	//给指定列的单元格赋值
 ```
 
@@ -90,7 +92,9 @@ PrewBoolValue = false;
 		@Header: @StartAt:0 head1|head2|head3|head4  
 		@Content: @StartAt:0 property1|property2|property3|property4  
 @End  
+
 -----------------------------------or-----------------------------------
+
 @Name:Test2  
 @Split:@  
 @Sheet:Page1  
