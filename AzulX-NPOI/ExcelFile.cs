@@ -213,8 +213,31 @@ namespace System
         }
         #endregion
 
-        #region 设置单元格
-
+        #region 获取/设置单元格
+        /// <summary>
+        /// 获取单元格
+        /// </summary>
+        /// <returns></returns>
+        public ICell GetCell()
+        {
+            return _col;
+        }
+        /// <summary>
+        /// 设置和获取单元格类型
+        /// </summary>
+        public CellType Type
+        {
+            get { return _col.CellType; }
+            set { _col.SetCellType(value); }
+        }
+        /// <summary>
+        /// 设置和获取单元格样式
+        /// </summary>
+        public ICellStyle Style
+        {
+            get { return _col.CellStyle; }
+            set { _col.CellStyle=value; }
+        }
         /// <summary>
         /// 在当前列位置进行填充
         /// </summary>
@@ -223,12 +246,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(string value, ICellStyle style = null)
         {
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            StringValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -239,12 +258,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(bool value, ICellStyle style = null)
         {
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            BoolValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -255,12 +270,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(double value, ICellStyle style = null)
         {
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            NumValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -271,12 +282,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(IRichTextString value, ICellStyle style = null)
         {
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            RichValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -287,13 +294,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile NextCell(string value, ICellStyle style = null)
         {
-            CurrentCol += 1;
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            NextStringValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -304,13 +306,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile NextCell(double value, ICellStyle style = null)
         {
-            CurrentCol += 1;
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            NextNumValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -321,13 +318,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile NextCell(IRichTextString value, ICellStyle style = null)
         {
-            CurrentCol += 1;
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            NextRichValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -338,13 +330,8 @@ namespace System
         /// <returns></returns>
         public ExcelFile NextCell(bool value, ICellStyle style = null)
         {
-            CurrentCol += 1;
-            MoveToCol(CurrentCol);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            NextBoolValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -356,12 +343,9 @@ namespace System
         /// <returns></returns>
         public ExcelFile SpecialCell(int index, bool value, ICellStyle style = null)
         {
-            MoveToCol(index);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            CurrentCol = index;
+            BoolValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -373,12 +357,9 @@ namespace System
         /// <returns></returns>
         public ExcelFile SpecialCell(int index, IRichTextString value, ICellStyle style = null)
         {
-            MoveToCol(index);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            CurrentCol = index;
+            RichValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -390,12 +371,9 @@ namespace System
         /// <returns></returns>
         public ExcelFile SpecialCell(int index, double value, ICellStyle style = null)
         {
-            MoveToCol(index);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            CurrentCol = index;
+            NumValue = value;
+            Style = style;
             return this;
         }
         /// <summary>
@@ -407,12 +385,9 @@ namespace System
         /// <returns></returns>
         public ExcelFile SpecialCell(int index, string value, ICellStyle style = null)
         {
-            MoveToCol(index);
-            _col.SetCellValue(value);
-            if (style != null)
-            {
-                _col.CellStyle = style;
-            }
+            CurrentCol = index;
+            StringValue = value;
+            Style = style;
             return this;
         }
         #endregion
@@ -495,6 +470,7 @@ namespace System
             set
             {
                 MoveToCol(CurrentCol+1);
+                _col.SetCellType(CellType.String);
                 _col.SetCellValue(value);
             }
 

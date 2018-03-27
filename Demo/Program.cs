@@ -36,7 +36,7 @@ namespace Demo
                 file.Select(1);
 
                 //阶梯
-                file.CurrentCell(0);
+                file.CurrentCell(0.ToString());
                 for (int i = 1; i < 10; i+=1)
                 {
                     file
@@ -46,6 +46,21 @@ namespace Demo
 
                 file.Save();
             }
+
+            using (ExcelFile file = new ExcelFile(AppDomain.CurrentDomain.BaseDirectory + "2.xlsx"))
+            {
+                file.Select(1);
+
+                //阶梯
+                Console.WriteLine(file.StringValue);
+                for (int i = 1; i < 10; i += 1)
+                {
+                    file
+                        .NextRow(false);
+                    Console.WriteLine(file.NextStringValue);
+                }
+            }
+            Console.ReadKey();
         }
     }
 }
