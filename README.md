@@ -7,8 +7,10 @@
 #### 简单的文件创建以及调用：
 
 ```C#
+
 using (ExcelFile file = new ExcelFile(filePath)){ ....; }
 using (ExcelFile file = new ExcelFile(filePath,ExcelVersion.V2007)){ ....; }
+
 ```
 
 #### 简单的Sheet操作：
@@ -16,10 +18,13 @@ using (ExcelFile file = new ExcelFile(filePath,ExcelVersion.V2007)){ ....; }
 ```C#
 
 //检测Sheet页是否存在
+
 HasSheet("Page1");
 HasSheet(100);
 
+
 //当Sheet不存在时会自动创建
+
 file.Select("Page1");
 file.Select(100);
 
@@ -35,7 +40,6 @@ MoveToCol(int col);		 //移动到当前行，指定列
 MoveToRow(int row);		 //移动到当前列，指定行
 
 NextRow(bool isFirstCol = true); //移动到下一行，isFirstCol 是否将位置指向第一列
-
 PrewRow(bool isFirstCol = true); //移动到上一行，isFirstCol 是否将位置指向第一列
 ```
 
@@ -45,20 +49,48 @@ PrewRow(bool isFirstCol = true); //移动到上一行，isFirstCol 是否将位�
 CurrentCell(value,style=null);		//给当前单元格赋值
 
 NextCell(value,style=null);		//给下一个单元格赋值，并将位置移动到下一个单元格
-
 SpeicalCell(index,value,style=null);	//给指定列的单元格赋值
 ```
+
+#### 简单的属性操作(获取/赋值)
+
+```C#
+//当前行列单元格操作
+
+StringValue = "test";
+NumValue = 1.00;
+DateValue = DateTime.Now;
+BoolValue = false;
+
+
+//当前行，下一列单元格操作
+
+NextStringValue = "test";
+NextNumValue = 1.00;
+NextDateValue = DateTime.Now;
+NextBoolValue = false;
+
+
+//当前行，上一列单元格操作
+
+PrewStringValue = "test";
+PrewNumValue = 1.00;
+PrewDateValue = DateTime.Now;
+PrewBoolValue = false;
+```
+
+
 
 #### 提供简单的模板处理:
 
 ```Bash
 @Name:Test1  
-@Split:|  
-@Sheet:Page1  
-@Header: @StartAt:0 head1|head2|head3|head4  
-@Content: @StartAt:0 property1|property2|property3|property4  
+	@Split:|  
+	@Sheet:Page1  
+		@Header: @StartAt:0 head1|head2|head3|head4  
+		@Content: @StartAt:0 property1|property2|property3|property4  
 @End  
-
+-----------------------------------or-----------------------------------
 @Name:Test2  
 @Split:@  
 @Sheet:Page1  
@@ -98,5 +130,9 @@ using (ExcelFile file = new ExcelFile(filePath))
 
 ### 更新日志
 
-   - 2018-03-26：有想法，并完成初步封装。
-
+   - 2018-03-26：有想法，并完成初步封装.
+   - 2018-03-27：增加和重构API，修复一些BUG.
+        - 修复EOF读取失败的BUG.
+        - 修复模板不能再第一列开始的BUG.
+        - 增加属性赋值和获取操作.
+        - 重构大量API，使其简洁，重用现有代码.
