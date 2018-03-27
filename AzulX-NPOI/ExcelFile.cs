@@ -222,6 +222,7 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(string value, ICellStyle style = null)
         {
+            MoveToCol(CurrentCol);
             _col.SetCellValue(value);
             if (style != null)
             {
@@ -237,6 +238,7 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(bool value, ICellStyle style = null)
         {
+            MoveToCol(CurrentCol);
             _col.SetCellValue(value);
             if (style != null)
             {
@@ -252,6 +254,7 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(double value, ICellStyle style = null)
         {
+            MoveToCol(CurrentCol);
             _col.SetCellValue(value);
             if (style != null)
             {
@@ -267,6 +270,7 @@ namespace System
         /// <returns></returns>
         public ExcelFile CurrentCell(IRichTextString value, ICellStyle style = null)
         {
+            MoveToCol(CurrentCol);
             _col.SetCellValue(value);
             if (style != null)
             {
