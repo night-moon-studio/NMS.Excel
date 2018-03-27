@@ -23,7 +23,7 @@ namespace AzulX.NPOI
             Templates = new HashSet<Template>();
             TemplatesMapping = new Dictionary<string, Template>();
             _endReg = new Regex("@End");
-            _nameReg = new Regex("(@Name[:|：](?<result>.*))",  RegexOptions.Compiled);
+            _nameReg = new Regex("(@Name[:|：](?<result>.*))", RegexOptions.Compiled);
             _sheetReg = new Regex("(@Sheet[:|：](?<result>.*))", RegexOptions.Compiled);
             _spiltReg = new Regex("(@Split[:|：](?<result>.*))", RegexOptions.Compiled);
             _headerReg = new Regex("(@Header[:|：](?<result>.*))", RegexOptions.Compiled);
@@ -36,7 +36,8 @@ namespace AzulX.NPOI
         /// </summary>
         /// <param name="key">对应配置文件中的@Name</param>
         /// <returns></returns>
-        public Template this[string key] {
+        public Template this[string key]
+        {
             get
             {
                 if (TemplatesMapping.ContainsKey(key))
@@ -82,7 +83,7 @@ namespace AzulX.NPOI
                 Match match = _nameReg.Match(contents[i]);
                 if (match.Success)
                 {
-                    Name = match.Groups["result"].Value;
+                    Name = match.Groups["result"].Value.Trim();
                     continue;
                 }
                 //匹配@End
@@ -90,7 +91,7 @@ namespace AzulX.NPOI
                 if (match.Success)
                 {
                     Templates.Add(template);
-                    if (Name!=null)
+                    if (Name != null)
                     {
                         TemplatesMapping[Name] = template;
                     }
@@ -111,7 +112,7 @@ namespace AzulX.NPOI
                 match = _sheetReg.Match(contents[i]);
                 if (match.Success)
                 {
-                    template.Sheet = match.Groups["result"].Value;
+                    template.Sheet = match.Groups["result"].Value.Trim();
                     continue;
                 }
 
@@ -120,13 +121,13 @@ namespace AzulX.NPOI
                 match = _headerReg.Match(contents[i]);
                 if (match.Success)
                 {
-                    string temp = match.Groups["result"].Value;
+                    string temp = match.Groups["result"].Value.Trim();
 
                     //匹配@StartAt
                     match = _startAtReg.Match(temp);
                     if (match.Success)
                     {
-                        string index = match.Groups["result"].Value;
+                        string index = match.Groups["result"].Value.Trim();
                         template.HeaderStartAt = int.Parse(index) - 1;
                         temp = _startAtReg.Replace(temp, "");
                     }
@@ -139,13 +140,13 @@ namespace AzulX.NPOI
                 match = _contentReg.Match(contents[i]);
                 if (match.Success)
                 {
-                    string temp = match.Groups["result"].Value;
+                    string temp = match.Groups["result"].Value.Trim();
 
                     //匹配@StartAt
                     match = _startAtReg.Match(temp);
                     if (match.Success)
                     {
-                        string index = match.Groups["result"].Value;
+                        string index = match.Groups["result"].Value.Trim();
                         template.ContentStartAt = int.Parse(index) - 1;
                         temp = _startAtReg.Replace(temp, "");
                     }
@@ -162,8 +163,8 @@ namespace AzulX.NPOI
         /// </summary>
         public void Show()
         {
-            Console.WriteLine("分隔符为："+ _split);
-            if (Templates!=null)
+            Console.WriteLine("分隔符为：" + _split);
+            if (Templates != null)
             {
                 foreach (var item in Templates)
                 {
@@ -171,7 +172,5 @@ namespace AzulX.NPOI
                 }
             }
         }
-
-       
     }
 }
