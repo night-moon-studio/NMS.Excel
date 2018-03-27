@@ -453,10 +453,7 @@ namespace System
             ICellStyle style = null;
             if (_template.Headers != null)
             {
-                if (_template.HeaderStartAt != 0)
-                {
-                    MoveToCol(_template.HeaderStartAt);
-                }
+                CurrentCol = _template.HeaderStartAt;
                 for (int i = 0; i < _template.Headers.Count; i += 1)
                 {
                     if (i < count)
@@ -493,23 +490,15 @@ namespace System
         /// <returns></returns>
         public ExcelFile Fill<T>(T t, params ICellStyle[] styles)
         {
-            if (_template.ContentStartAt != 0)
-            {
-                MoveToCol(_template.ContentStartAt);
-            }
             int count = styles.Length;
             ICellStyle style = null;
             JObject tempObject = JObject.FromObject(t);
             if (_template.Contents != null)
             {
+                CurrentCol = _template.ContentStartAt;
                 for (int i = 0; i < _template.Contents.Count; i += 1)
                 {
                     string key = _template.Contents[i];
-                    if (key == null || key == "")
-                    {
-                        CurrentCol += 1;
-                        continue;
-                    }
                     if (tempObject.ContainsKey(key))
                     {
                         if (i < count)
@@ -517,6 +506,10 @@ namespace System
                             style = styles[i];
                         }
                         NextCell(tempObject[key].ToString(), style);
+                    }
+                    else
+                    {
+                        CurrentCol += 1;
                     }
                 }
             }
