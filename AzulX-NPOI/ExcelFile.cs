@@ -505,6 +505,11 @@ namespace System
                 for (int i = 0; i < _template.Contents.Count; i += 1)
                 {
                     string key = _template.Contents[i];
+                    if (key == null || key == "")
+                    {
+                        CurrentCol += 1;
+                        continue;
+                    }
                     if (tempObject.ContainsKey(key))
                     {
                         if (i < count)
