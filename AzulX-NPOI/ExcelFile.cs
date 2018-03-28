@@ -241,6 +241,18 @@ namespace System
         /// <summary>
         /// 在当前列位置进行填充
         /// </summary>
+        /// <param name="value">需要填充的时间</param>
+        /// <param name="style">单元格样式</param>
+        /// <returns></returns>
+        public ExcelFile CurrentCell(DateTime value, ICellStyle style = null)
+        {
+            DateValue = value;
+            Style = style;
+            return this;
+        }
+        /// <summary>
+        /// 在当前列位置进行填充
+        /// </summary>
         /// <param name="value">需要填充的值</param>
         /// <param name="style">单元格样式</param>
         /// <returns></returns>
@@ -283,6 +295,18 @@ namespace System
         public ExcelFile CurrentCell(IRichTextString value, ICellStyle style = null)
         {
             RichValue = value;
+            Style = style;
+            return this;
+        }
+        /// <summary>
+        /// 在当前位置，向下一列进行填充
+        /// </summary>
+        /// <param name="value">需要填充的时间</param>
+        /// <param name="style">单元格样式</param>
+        /// <returns></returns>
+        public ExcelFile NextCell(DateTime value, ICellStyle style = null)
+        {
+            NextDateValue = value;
             Style = style;
             return this;
         }
