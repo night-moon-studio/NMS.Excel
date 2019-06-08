@@ -2,9 +2,10 @@
 # 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
 ################################################################################
 
-/AzulX-NPOI/bin/Debug/netcoreapp2.0
-/AzulX-NPOI/obj/Debug/netcoreapp2.0
+/AzulX-NPOI/bin/
+/AzulX-NPOI/obj/
 /AzulX-NPOI/obj
-/Demo/bin/Debug/netcoreapp2.0
-/Demo/obj
-/.vs/AzulX-NPOI/v15/Server/sqlite3
+/Demo/bin/
+/Demo/obj/
+/.vs/
+.vs/

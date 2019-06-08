@@ -11,7 +11,7 @@ namespace AzulX.NPOI
         {
             _workbook = workbook;
         }
-        public static ExcelStyle Create(ExcelFile file)
+        public static ExcelStyle Create(ExcelOperator file)
         {
             return new ExcelStyle(file._workbook);
         }
