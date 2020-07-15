@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzulX-NPOI\AzulX.NPOI.csproj" />
+    <ProjectReference Include="..\Natasha.Excel\Natasha.Excel.csproj" />
   </ItemGroup>
 
 </Project>

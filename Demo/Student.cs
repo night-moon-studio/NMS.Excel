@@ -6,9 +6,9 @@ namespace Demo
 {
     public class Student
     {
-        public string Name;
+        public string Name { get; set; }
         public string Description;
-        public int Age;
-        public string Sex;
+        public int Age { get; set; }
+        public string Sex { get; set; }
     }
 }
