@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Natasha.Excel\Natasha.Excel.csproj" />
+    <ProjectReference Include="..\..\src\Natasha.Excel\Natasha.Excel.csproj" />
   </ItemGroup>
 
 </Project>
