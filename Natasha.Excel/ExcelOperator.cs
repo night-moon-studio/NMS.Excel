@@ -1,13 +1,9 @@
 ﻿using Natasha.CSharp;
 using Natasha.Excel;
-using NPOI.OpenXmlFormats.Spreadsheet;
-using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
-using System.Security;
 using System.Text;
 
 namespace System

@@ -6,16 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="1.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="1.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Natasha.Excel\Natasha.Excel.csproj" />
   </ItemGroup>
 
