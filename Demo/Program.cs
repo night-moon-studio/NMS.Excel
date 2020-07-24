@@ -7,7 +7,12 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            AssemblyDomain.Init();
+
+            NatashaComponentRegister.RegistDomain<NatashaAssemblyDomain>();
+            NatashaComponentRegister.RegistCompiler<NatashaCSharpCompiler>();
+            NatashaComponentRegister.RegistSyntax<NatashaCSharpSyntax>();
+
+            NSucceedLog.Enabled = true;
             List<Student> students = new List<Student>();
             for (int i = 0; i < 5; i++)
             {
@@ -21,19 +26,20 @@ namespace Demo
             }
 
 
-            ExcelOperator.ConfigWritter<Student>(new Dictionary<string, string> {
+            var dict = new Dictionary<string, string> {
 
                 { "名字","Name"},
                 { "年龄","Age"},
                 { "性别","Sex"},
                 { "描述","Description"},
 
-            }, "描述");
+            };
 
+            ExcelOperator.ConfigWritter<Student>(dict, "描述");
             ExcelOperator.WriteToFile("1.xlsx", students);
 
 
-            ExcelOperator.ConfigReader<Student>(("名字", "Name"), ("年龄", "Age"), ("性别", "Sex"));
+            ExcelOperator.ConfigReader<Student>(dict);
             var list = ExcelOperator.FileToEntities<Student>("1.xlsx");
             Console.ReadKey();
             //using (ExcelFile file = new ExcelFile(AppDomain.CurrentDomain.BaseDirectory + "1.xlsx"))

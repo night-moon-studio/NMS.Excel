@@ -1,6 +1,8 @@
 ﻿using Natasha.CSharp;
 using Natasha.Excel;
+using NPOI.OpenXmlFormats.Spreadsheet;
 using NPOI.SS.Formula.Functions;
+using NPOI.SS.UserModel;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -17,7 +19,7 @@ namespace System
         {
             ExcelOperator<TEntity>.CreateWriteDelegate(mappers, ignores);
         }
-        public static void ConfigReader<TEntity>(params (string Key, string Value)[] mappers)
+        public static void ConfigReader<TEntity>(Dictionary<string, string> mappers)
         {
             ExcelOperator<TEntity>.CreateReadDelegate(mappers);
         }
@@ -37,85 +39,99 @@ namespace System
     {
 
         private static ImmutableDictionary<string, string> _mappers;
-        private static Dictionary<string, int> _fields;
-        private static Action<RowOperator, IEnumerable<TEntity>> Writter;
-        private static Func<RowOperator, int, int[], IEnumerable<TEntity>> Reader;
+        private static ImmutableDictionary<string, int> _fields;
+        private static Action<ISheet, IEnumerable<TEntity>> Writter;
+        private static Func<ISheet, int[], IEnumerable<TEntity>> Reader;
 
-        public static Action<RowOperator, IEnumerable<TEntity>> CreateWriteDelegate(Dictionary<string, string> mappers, params string[] ignores)
+        public static Action<ISheet, IEnumerable<TEntity>> CreateWriteDelegate(Dictionary<string, string> mappers, params string[] ignores)
         {
-
             _mappers = ImmutableDictionary.CreateRange(mappers);
-            //给字段排序
-            int index = 0;
-            foreach (var item in _mappers)
-            {
-                _fields[item.Key] = index;
-                index += 1;
-            }
-
             HashSet<string> ignorSets = new HashSet<string>(ignores);
             StringBuilder excelBody = new StringBuilder();
             StringBuilder excelHeader = new StringBuilder();
-            excelHeader.Append("var col = row.Columns;");
-            excelBody.Append(@"foreach(var item in arg2){");
-            excelBody.Append($"arg1 = arg1.Next;");
-            excelBody.Append($"col = row.Columns;");
+            excelHeader.AppendLine("var rowIndex = 0;");
+            excelHeader.AppendLine("IRow row = arg1.CreateRow(rowIndex);");
+
+            excelBody.AppendLine(@"foreach(var item in arg2){");
+            excelBody.AppendLine($"rowIndex+=1;");
+            excelBody.AppendLine($"row = arg1.CreateRow(rowIndex);");
+            int column = 0;
             foreach (var item in mappers)
             {
 
                 if (!ignorSets.Contains(item.Key))
                 {
-                    excelHeader.Append($"col.SetValue(\"{item.Key}\");");
-                    excelHeader.Append("col = col.Next;");
-                    excelBody.Append($"col.SetValue(item.{item.Value});");
-                    excelBody.Append("col = col.Next;");
+
+                    excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Value});");
+                    excelHeader.AppendLine($"row.CreateCell({column}).SetCellValue(\"{item.Key}\");");
+                    column += 1;
+
                 }
 
             }
-            excelBody.Append("}");
+            excelBody.AppendLine("}");
             excelHeader.Append(excelBody);
             return Writter = NDelegate
                 .UseDomain(typeof(TEntity).GetDomain())
-                .Action<RowOperator, IEnumerable<TEntity>>(excelHeader.ToString());
+                .Action<ISheet, IEnumerable<TEntity>>(excelHeader.ToString());
+
         }
-        public static Func<RowOperator, int, IEnumerable<TEntity>> CreateReadDelegate(params (string Key, string Value)[] mappers)
+        public static Func<ISheet, int[], IEnumerable<TEntity>> CreateReadDelegate(Dictionary<string, string> mappers)
         {
 
-            StringBuilder excelBody = new StringBuilder();
-            excelBody.Append($"var list = new List<{typeof(TEntity).GetDevelopName()}>(arg.Count);");
-            excelBody.Append(@"for(int i=1;i<arg2;i+=1){");
-            excelBody.Append("arg1 = arg1[i];");
-            excelBody.Append("var columns = row[i].Columns;");
-            excelBody.Append($"var instance = new {typeof(TEntity).GetDevelopName()}();");
-            for (int i = 0; i < mappers.Length; i++)
+
+            //给字段排序
+            int index = 0;
+            var tempDict = new Dictionary<string, int>();
+            foreach (var item in mappers)
             {
-                
-                var prop = typeof(TEntity).GetProperty(mappers[i].Value);
-               
-                if (prop.PropertyType == typeof(string))
-                {
-                    excelBody.Append($"instance.{mappers[i].Value} = columns[{i}].StringValue;");
-                }
-                else if (prop.PropertyType == typeof(DateTime))
-                {
-                    excelBody.Append($"instance.{mappers[i].Value} = columns[{i}].DateValue;");
-                }
-                else if (prop.PropertyType != typeof(bool))
-                {
-                    excelBody.Append($"instance.{mappers[i].Value} = Convert.To{prop.PropertyType.Name}(columns[{i}].NumValue);");
-                }
-                else
-                {
-                    excelBody.Append($"instance.{mappers[i].Value} = columns[{i}].BoolValue;");
-                }
-                 
+                tempDict[item.Value] = index;
+                index += 1;
             }
-            excelBody.Append("list.Add(instance);");
-            excelBody.Append("}");
-            excelBody.Append("return list;");
+            _fields = ImmutableDictionary.CreateRange(tempDict);
+
+
+            StringBuilder excelBody = new StringBuilder();
+            excelBody.AppendLine($"var list = new List<{typeof(TEntity).GetDevelopName()}>(arg1.LastRowNum);");
+            excelBody.AppendLine(@"for(int i = 1;i<=arg1.LastRowNum;i+=1){");
+            excelBody.AppendLine("var row = arg1.GetRow(i);");
+            excelBody.AppendLine($"var instance = new {typeof(TEntity).GetDevelopName()}();");
+            foreach (var item in _fields)
+            {
+                var prop = typeof(TEntity).GetProperty(item.Key);
+                if (prop != null)
+                {
+                    if (prop.PropertyType == typeof(string))
+                    {
+                        excelBody.AppendLine($"instance.{item.Key} = row.GetCell(arg2[{item.Value}]).StringCellValue;");
+                    }
+                    else if (prop.PropertyType == typeof(DateTime))
+                    {
+                        excelBody.AppendLine($"instance.{item.Key} = row.GetCell(arg2[{item.Value}]).DateCellValue;");
+                    }
+                    else if (prop.PropertyType == typeof(bool))
+                    {
+                        excelBody.AppendLine($"instance.{item.Key} = row.GetCell(arg2[{item.Value}]).BooleanCellValue;");
+
+                    }
+                    else if (prop.PropertyType == typeof(double))
+                    {
+                        excelBody.AppendLine($"instance.{item.Key} = row.GetCell(arg2[{item.Value}]).NumericCellValue;");
+                    }
+                    else
+                    {
+                        excelBody.AppendLine($"instance.{item.Key} = Convert.To{prop.PropertyType.Name}(row.GetCell(arg2[{item.Value}]).NumericCellValue);");
+                    }
+                }
+               
+            }
+
+            excelBody.AppendLine("list.Add(instance);");
+            excelBody.AppendLine("}");
+            excelBody.AppendLine("return list;");
             return Reader = NDelegate
                 .UseDomain(typeof(TEntity).GetDomain())
-                .Func<RowOperator, int, int[], IEnumerable<TEntity>>(excelBody.ToString());
+                .Func<ISheet, int[], IEnumerable<TEntity>>(excelBody.ToString());
         }
 
 
@@ -143,12 +159,12 @@ namespace System
             {
 
                 var indexs = new int[_mappers.Count];
-                var row = builder[sheetPage];
-                var columns = row.Columns;
-                for (int i = 0; i < row.Count; i+=1)
+                var sheet = builder[sheetPage];
+                var row = sheet.GetRow(0);
+                for (int i = 0; i < row.LastCellNum; i+=1)
                 {
 
-                    if (_mappers.TryGetValue(columns.StringValue, out var field))
+                    if (_mappers.TryGetValue(row.GetCell(i).StringCellValue, out var field))
                     {
                         if (_fields.TryGetValue(field, out var value))
                         {
@@ -157,7 +173,7 @@ namespace System
                     }
 
                 }
-                return Reader(row.Next, builder.Count, indexs);
+                return Reader(sheet, indexs);
 
             }
 

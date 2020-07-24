@@ -105,7 +105,7 @@ namespace Natasha.Excel
         #endregion
 
         #region 行列位置操作
-        public RowOperator this[int sheetIndex]
+        public ISheet this[int sheetIndex]
         {
             get
             {
@@ -118,12 +118,11 @@ namespace Natasha.Excel
                     _sheet = _workbook.CreateSheet();
                     RefreshSheets();
                 }
-                _sheet = _workbook.GetSheetAt(sheetIndex);
-                return new RowOperator(_sheet);
+                return _sheet = _workbook.GetSheetAt(sheetIndex);
             }
         }
 
-        public RowOperator this[string sheetIndex]
+        public ISheet this[string sheetIndex]
         {
             get
             {
@@ -133,7 +132,7 @@ namespace Natasha.Excel
                 }
                 _sheet = _workbook.GetSheet(sheetIndex);
                 RefreshSheets();
-                return new RowOperator(_sheet);
+                return _sheet;
             }
         }
         #endregion
