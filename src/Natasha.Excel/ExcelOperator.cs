@@ -4,6 +4,7 @@ using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -59,8 +60,22 @@ public class ExcelOperator<TEntity>
             if (!ignorSets.Contains(item.Value))
             {
 
-                excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key});");
                 excelHeader.AppendLine($"row.CreateCell({column}).SetCellValue(\"{item.Value}\");");
+                
+                var prop = typeof(TEntity).GetProperty(item.Key);
+                if (prop.PropertyType== typeof(string))
+                {
+                    excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key});");
+                }
+                else if (prop.PropertyType.IsGenericType)
+                {
+                    excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key}.ToString());");
+                }
+                else
+                {
+                    excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key});");
+                }
+                
                 column += 1;
 
             }
@@ -109,6 +124,7 @@ public class ExcelOperator<TEntity>
 
         StringBuilder excelBody = new StringBuilder();
         excelBody.AppendLine($"var list = new List<{typeof(TEntity).GetDevelopName()}>(arg1.LastRowNum);");
+        excelBody.AppendLine($"var tempNullableValue = String.Empty;");
         excelBody.AppendLine(@"for(int i = 1;i<=arg1.LastRowNum;i+=1){");
         excelBody.AppendLine("var row = arg1.GetRow(i);");
         excelBody.AppendLine($"var instance = new {typeof(TEntity).GetDevelopName()}();");
@@ -136,7 +152,18 @@ public class ExcelOperator<TEntity>
                 }
                 else
                 {
-                    excelBody.AppendLine($"instance.{item.Key} = Convert.To{prop.PropertyType.Name}(row.GetCell(arg2[{item.Value}]).NumericCellValue);");
+
+                    if (prop.PropertyType.IsGenericType)
+                    {
+                        excelBody.AppendLine($"tempNullableValue = row.GetCell(arg2[{item.Value}]).StringCellValue;");
+                        excelBody.AppendLine($"if(string.IsNullOrEmpty(tempNullableValue)){{ instance.{item.Key} = null; }}");
+                        excelBody.AppendLine($"else{{instance.{item.Key} = Convert.To{prop.PropertyType.GetGenericArguments()[0].Name}(tempNullableValue);}}");
+                    }
+                    else
+                    {
+                        excelBody.AppendLine($"instance.{item.Key} = Convert.To{prop.PropertyType.Name}(row.GetCell(arg2[{item.Value}]).NumericCellValue);");
+                    }
+                    
                 }
             }
 
@@ -146,7 +173,7 @@ public class ExcelOperator<TEntity>
         excelBody.AppendLine("}");
         excelBody.AppendLine("return list;");
         return Reader = NDelegate
-            .UseDomain(typeof(TEntity).GetDomain())
+            .UseDomain(typeof(TEntity).GetDomain(),item=>item.LogSyntaxError().LogCompilerError())
             .Func<ISheet, int[], IEnumerable<TEntity>>(excelBody.ToString());
     }
 

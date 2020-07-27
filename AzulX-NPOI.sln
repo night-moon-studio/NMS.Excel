@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo", "samples\Demo\Demo.csproj", "{DDA010CA-83D2-410F-81A9-EA3334F298F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Natasha.Excel", "src\Natasha.Excel\Natasha.Excel.csproj", "{E190E134-F6F3-444D-B3C3-88A33845E318}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NMS.Excel", "src\Natasha.Excel\NMS.Excel.csproj", "{E190E134-F6F3-444D-B3C3-88A33845E318}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

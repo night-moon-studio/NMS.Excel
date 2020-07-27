@@ -10,5 +10,9 @@ namespace Demo
         public string Description;
         public int Age { get; set; }
         public string Sex { get; set; }
+
+        public long? UpdateTime { get; set; }
+
+        public short? Flag { get; set; }
     }
 }

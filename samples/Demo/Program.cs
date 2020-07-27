@@ -21,10 +21,12 @@ namespace Demo
                     Age = i,
                     Description = "This is 描述！",
                     Name = "test" + i,
-                    Sex = i % 2 == 0 ? "男" : "女"
+                    Sex = i % 2 == 0 ? "男" : "女",
+                    Flag = i % 2 == 0 ? (short?)1 : null,
+                    UpdateTime = i % 2 == 0 ? (short?)1000 : null,
                 });
             }
-
+            
 
             var dict = new Dictionary<string, string> {
 
@@ -32,16 +34,20 @@ namespace Demo
                 { "Age","年龄"},
                 { "Sex","性别"},
                 { "Description","描述"},
-
+                { "Flag","标识"},
+                { "UpdateTime","更新时间"},
             };
 
             ExcelOperator.SetWritterMapping<Student>(dict, "描述");
             ExcelOperator.WriteToFile("1.xlsx", students);
 
-
             ExcelOperator.SetReaderMapping<Student>(dict);
             var list = ExcelOperator.FileToEntities<Student>("1.xlsx");
+
             Console.ReadKey();
+
+
+
             //using (ExcelFile file = new ExcelFile(AppDomain.CurrentDomain.BaseDirectory + "1.xlsx"))
             //{
             //    ExcelStyle style = ExcelStyle.Create(file);
@@ -80,5 +86,8 @@ namespace Demo
             //    }
             //}
         }
+
+
+        
     }
 }
