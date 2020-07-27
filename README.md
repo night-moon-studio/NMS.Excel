@@ -22,8 +22,8 @@ var dict = new Dictionary<string, string> {
        
 };
 //忽略 “描述” 字段
-ExcelOperator.ConfigWritter<Student>(dict, "描述");
-ExcelOperator.ConfigReader<Student>(dict);
+ExcelOperator.SetWritterMapping<Student>(dict, "描述");
+ExcelOperator.SetReaderMapping<Student>(dict);
 ```
 
 ## 3、写入与读取
