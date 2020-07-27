@@ -95,7 +95,7 @@ public class ExcelOperator<TEntity>
         _fields = ImmutableDictionary.CreateRange(tempDict);
         
         Dictionary<string, string> dict = new Dictionary<string, string>();
-        foreach (var item in _mappers)
+        foreach (var item in mappers)
         {
 
             if (!ignorSets.Contains(item.Key))
