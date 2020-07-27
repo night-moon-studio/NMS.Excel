@@ -5,10 +5,10 @@
     <Product>Natasha.Excel</Product>
     <Description>根据属性与注释名，生成表格和读取表格</Description>
     <Copyright>NMSAzulX</Copyright>
-    <PackageId>Natasha.Excel</PackageId>
+    <PackageId>NMS.Excel</PackageId>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReleaseNotes>发布第一版</PackageReleaseNotes>
-    <Version>0.1.0</Version>
+    <Version>0.2.1</Version>
     <PackageLicenseUrl>https://github.com/night-moon-studio/Natasha.Excel/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/night-moon-studio/Natasha.Excel</PackageProjectUrl>
     <PackageTags>Excel;NOPI;Natasha;</PackageTags>

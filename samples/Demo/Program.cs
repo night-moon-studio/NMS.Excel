@@ -28,18 +28,18 @@ namespace Demo
 
             var dict = new Dictionary<string, string> {
 
-                { "名字","Name"},
-                { "年龄","Age"},
-                { "性别","Sex"},
-                { "描述","Description"},
+                { "Name","名字"},
+                { "Age","年龄"},
+                { "Sex","性别"},
+                { "Description","描述"},
 
             };
 
-            ExcelOperator.ConfigWritter<Student>(dict, "描述");
+            ExcelOperator.SetWritterMapping<Student>(dict, "描述");
             ExcelOperator.WriteToFile("1.xlsx", students);
 
 
-            ExcelOperator.ConfigReader<Student>(dict);
+            ExcelOperator.SetReaderMapping<Student>(dict);
             var list = ExcelOperator.FileToEntities<Student>("1.xlsx");
             Console.ReadKey();
             //using (ExcelFile file = new ExcelFile(AppDomain.CurrentDomain.BaseDirectory + "1.xlsx"))

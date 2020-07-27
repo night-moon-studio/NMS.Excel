@@ -10,13 +10,13 @@ using System.Text;
 public class ExcelOperator
 {
 
-    public static void ConfigWritter<TEntity>(Dictionary<string, string> mappers, params string[] ignores)
+    public static void SetWritterMapping<TEntity>(Dictionary<string, string> mappers, params string[] ignores)
     {
         ExcelOperator<TEntity>.CreateWriteDelegate(mappers, ignores);
     }
-    public static void ConfigReader<TEntity>(Dictionary<string, string> mappers)
+    public static void SetReaderMapping<TEntity>(Dictionary<string, string> mappers, params string[] ignores)
     {
-        ExcelOperator<TEntity>.CreateReadDelegate(mappers);
+        ExcelOperator<TEntity>.CreateReadDelegate(mappers, ignores);
     }
 
     public static void WriteToFile<TEntity>(string filePath, IEnumerable<TEntity> entities, int sheetPage = 0)
@@ -34,6 +34,7 @@ public class ExcelOperator<TEntity>
 {
 
     private static ImmutableDictionary<string, string> _mappers;
+    private static ImmutableDictionary<string, string> _reverser_mappers;
     private static ImmutableDictionary<string, int> _fields;
     private static Action<ISheet, IEnumerable<TEntity>> Writter;
     private static Func<ISheet, int[], IEnumerable<TEntity>> Reader;
@@ -41,6 +42,7 @@ public class ExcelOperator<TEntity>
     public static Action<ISheet, IEnumerable<TEntity>> CreateWriteDelegate(Dictionary<string, string> mappers, params string[] ignores)
     {
         _mappers = ImmutableDictionary.CreateRange(mappers);
+        
         HashSet<string> ignorSets = new HashSet<string>(ignores);
         StringBuilder excelBody = new StringBuilder();
         StringBuilder excelHeader = new StringBuilder();
@@ -54,11 +56,11 @@ public class ExcelOperator<TEntity>
         foreach (var item in mappers)
         {
 
-            if (!ignorSets.Contains(item.Key))
+            if (!ignorSets.Contains(item.Value))
             {
 
-                excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Value});");
-                excelHeader.AppendLine($"row.CreateCell({column}).SetCellValue(\"{item.Key}\");");
+                excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key});");
+                excelHeader.AppendLine($"row.CreateCell({column}).SetCellValue(\"{item.Value}\");");
                 column += 1;
 
             }
@@ -71,19 +73,38 @@ public class ExcelOperator<TEntity>
             .Action<ISheet, IEnumerable<TEntity>>(excelHeader.ToString());
 
     }
-    public static Func<ISheet, int[], IEnumerable<TEntity>> CreateReadDelegate(Dictionary<string, string> mappers)
+    public static Func<ISheet, int[], IEnumerable<TEntity>> CreateReadDelegate(Dictionary<string, string> mappers, params string[] ignores)
     {
 
 
         //给字段排序
         int index = 0;
         var tempDict = new Dictionary<string, int>();
+        HashSet<string> ignorSets = new HashSet<string>(ignores);
+
         foreach (var item in mappers)
         {
-            tempDict[item.Value] = index;
-            index += 1;
+
+            if (!ignorSets.Contains(item.Key))
+            {
+                tempDict[item.Key] = index;
+                index += 1;
+            }
+            
         }
         _fields = ImmutableDictionary.CreateRange(tempDict);
+        
+        Dictionary<string, string> dict = new Dictionary<string, string>();
+        foreach (var item in _mappers)
+        {
+
+            if (!ignorSets.Contains(item.Key))
+            {
+                dict[item.Value] = item.Key;
+            }
+
+        }
+        _reverser_mappers = dict.ToImmutableDictionary();
 
 
         StringBuilder excelBody = new StringBuilder();
@@ -143,7 +164,6 @@ public class ExcelOperator<TEntity>
             builder.Save();
         }
 
-
     }
 
 
@@ -159,7 +179,7 @@ public class ExcelOperator<TEntity>
             for (int i = 0; i < row.LastCellNum; i += 1)
             {
 
-                if (_mappers.TryGetValue(row.GetCell(i).StringCellValue, out var field))
+                if (_reverser_mappers.TryGetValue(row.GetCell(i).StringCellValue, out var field))
                 {
                     if (_fields.TryGetValue(field, out var value))
                     {
