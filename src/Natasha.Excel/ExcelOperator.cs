@@ -18,43 +18,43 @@ public class ExcelOperator
     /// </summary>
     /// <param name="type"></param>
     /// <returns>Dict：key=属性名，value=注释</returns>
-    public static Dictionary<string,string> GetProperySummaryFromXml(string xmlPath,Type type)
+    public static Dictionary<string, string> GetProperySummaryFromXml(string xmlPath, Type type)
     {
-            var dic = new Dictionary<string, string>();
-            var sReader = new StringReader(File.ReadAllText(xmlPath));
-            using (var xmlReader = XmlReader.Create(sReader))
+        var dic = new Dictionary<string, string>();
+        var sReader = new StringReader(File.ReadAllText(xmlPath));
+        using (var xmlReader = XmlReader.Create(sReader))
+        {
+            XPathDocument xpath = null;
+            try
             {
-                XPathDocument xpath = null;
-                try
-                {
-                    xpath = new XPathDocument(xmlReader);
-                }
-                catch
-                {
-                    return null;
-                }
-                var xmlNav = xpath.CreateNavigator();
-
-                var className = (type.IsNested ? $"{type.Namespace}.{type.DeclaringType.Name}.{type.Name}" : $"{type.Namespace}.{type.Name}").Trim('.');
-                var node = xmlNav.SelectSingleNode($"/doc/members/member[@name='T:{className}']/summary");
-
-                var props = type.GetProperties();
-                foreach (var prop in props)
-                {
-                    className = (prop.DeclaringType.IsNested ? $"{prop.DeclaringType.Namespace}.{prop.DeclaringType.DeclaringType.Name}.{prop.DeclaringType.Name}" : $"{prop.DeclaringType.Namespace}.{prop.DeclaringType.Name}").Trim('.');
-                    node = xmlNav.SelectSingleNode($"/doc/members/member[@name='P:{className}.{prop.Name}']/summary");
-                    if (node == null) continue;
-                    var comment = node.InnerXml.Trim(' ', '\r', '\n', '\t');
-                    if (string.IsNullOrEmpty(comment)) continue;
-                    if (prop.Name != default && prop.Name != "")
-                    {
-                        dic.Add(prop.Name, comment);
-                    }
-
-                }
+                xpath = new XPathDocument(xmlReader);
             }
+            catch
+            {
+                return null;
+            }
+            var xmlNav = xpath.CreateNavigator();
 
-            return dic;
+            var className = (type.IsNested ? $"{type.Namespace}.{type.DeclaringType.Name}.{type.Name}" : $"{type.Namespace}.{type.Name}").Trim('.');
+            var node = xmlNav.SelectSingleNode($"/doc/members/member[@name='T:{className}']/summary");
+
+            var props = type.GetProperties();
+            foreach (var prop in props)
+            {
+                className = (prop.DeclaringType.IsNested ? $"{prop.DeclaringType.Namespace}.{prop.DeclaringType.DeclaringType.Name}.{prop.DeclaringType.Name}" : $"{prop.DeclaringType.Namespace}.{prop.DeclaringType.Name}").Trim('.');
+                node = xmlNav.SelectSingleNode($"/doc/members/member[@name='P:{className}.{prop.Name}']/summary");
+                if (node == null) continue;
+                var comment = node.InnerXml.Trim(' ', '\r', '\n', '\t');
+                if (string.IsNullOrEmpty(comment)) continue;
+                if (prop.Name != default && prop.Name != "")
+                {
+                    dic.Add(prop.Name, comment);
+                }
+
+            }
+        }
+
+        return dic;
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public class ExcelOperator<TEntity>
     public static Action<ISheet, IEnumerable<TEntity>> CreateWriteDelegate(Dictionary<string, string> mappers, params string[] ignores)
     {
         _mappers = ImmutableDictionary.CreateRange(mappers);
-        
+
         HashSet<string> ignorSets = new HashSet<string>(ignores);
         StringBuilder excelBody = new StringBuilder();
         StringBuilder excelHeader = new StringBuilder();
@@ -135,9 +135,9 @@ public class ExcelOperator<TEntity>
             {
 
                 excelHeader.AppendLine($"row.CreateCell({column}).SetCellValue(\"{item.Value}\");");
-                
+
                 var prop = typeof(TEntity).GetProperty(item.Key);
-                if (prop.PropertyType== typeof(string))
+                if (prop.PropertyType == typeof(string))
                 {
                     excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key});");
                 }
@@ -149,7 +149,7 @@ public class ExcelOperator<TEntity>
                 {
                     excelBody.AppendLine($"row.CreateCell({column}).SetCellValue(item.{item.Key});");
                 }
-                
+
                 column += 1;
 
             }
@@ -179,10 +179,10 @@ public class ExcelOperator<TEntity>
                 tempDict[item.Key] = index;
                 index += 1;
             }
-            
+
         }
         _fields = ImmutableDictionary.CreateRange(tempDict);
-        
+
         Dictionary<string, string> dict = new Dictionary<string, string>();
         foreach (var item in mappers)
         {
@@ -237,7 +237,7 @@ public class ExcelOperator<TEntity>
                     {
                         excelBody.AppendLine($"instance.{item.Key} = Convert.To{prop.PropertyType.Name}(row.GetCell(arg2[{item.Value}]).NumericCellValue);");
                     }
-                    
+
                 }
             }
 
@@ -247,7 +247,7 @@ public class ExcelOperator<TEntity>
         excelBody.AppendLine("}");
         excelBody.AppendLine("return list;");
         return Reader = NDelegate
-            .UseDomain(typeof(TEntity).GetDomain(),item=>item.LogSyntaxError().LogCompilerError())
+            .UseDomain(typeof(TEntity).GetDomain(), item => item.LogSyntaxError().LogCompilerError())
             .Func<ISheet, int[], IEnumerable<TEntity>>(excelBody.ToString());
     }
 
