@@ -7,23 +7,97 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
 
 public class ExcelOperator
 {
 
+    /// <summary>
+    /// 通过属性的注释文本，通过 xml 读取
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns>Dict：key=属性名，value=注释</returns>
+    public static Dictionary<string,string> GetProperySummaryFromXml(string xmlPath,Type type)
+    {
+            var dic = new Dictionary<string, string>();
+            var sReader = new StringReader(File.ReadAllText(xmlPath));
+            using (var xmlReader = XmlReader.Create(sReader))
+            {
+                XPathDocument xpath = null;
+                try
+                {
+                    xpath = new XPathDocument(xmlReader);
+                }
+                catch
+                {
+                    return null;
+                }
+                var xmlNav = xpath.CreateNavigator();
+
+                var className = (type.IsNested ? $"{type.Namespace}.{type.DeclaringType.Name}.{type.Name}" : $"{type.Namespace}.{type.Name}").Trim('.');
+                var node = xmlNav.SelectSingleNode($"/doc/members/member[@name='T:{className}']/summary");
+
+                var props = type.GetProperties();
+                foreach (var prop in props)
+                {
+                    className = (prop.DeclaringType.IsNested ? $"{prop.DeclaringType.Namespace}.{prop.DeclaringType.DeclaringType.Name}.{prop.DeclaringType.Name}" : $"{prop.DeclaringType.Namespace}.{prop.DeclaringType.Name}").Trim('.');
+                    node = xmlNav.SelectSingleNode($"/doc/members/member[@name='P:{className}.{prop.Name}']/summary");
+                    if (node == null) continue;
+                    var comment = node.InnerXml.Trim(' ', '\r', '\n', '\t');
+                    if (string.IsNullOrEmpty(comment)) continue;
+                    if (prop.Name != default && prop.Name != "")
+                    {
+                        dic.Add(prop.Name, comment);
+                    }
+
+                }
+            }
+
+            return dic;
+    }
+
+    /// <summary>
+    /// 设置写入映射
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="mappers"></param>
+    /// <param name="ignores"></param>
     public static void SetWritterMapping<TEntity>(Dictionary<string, string> mappers, params string[] ignores)
     {
         ExcelOperator<TEntity>.CreateWriteDelegate(mappers, ignores);
     }
+
+    /// <summary>
+    /// 设置读取映射
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="mappers"></param>
+    /// <param name="ignores"></param>
     public static void SetReaderMapping<TEntity>(Dictionary<string, string> mappers, params string[] ignores)
     {
         ExcelOperator<TEntity>.CreateReadDelegate(mappers, ignores);
     }
 
+    /// <summary>
+    /// 将实体写入文件
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="filePath"></param>
+    /// <param name="entities"></param>
+    /// <param name="sheetPage"></param>
     public static void WriteToFile<TEntity>(string filePath, IEnumerable<TEntity> entities, int sheetPage = 0)
     {
         ExcelOperator<TEntity>.WriteToFile(filePath, entities, sheetPage);
     }
+
+    /// <summary>
+    /// 将文件内容写入实体
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <param name="filePath"></param>
+    /// <param name="sheetPage"></param>
+    /// <returns></returns>
     public static IEnumerable<TEntity> FileToEntities<TEntity>(string filePath, int sheetPage = 0)
     {
         return ExcelOperator<TEntity>.FileToEntities(filePath, sheetPage);
