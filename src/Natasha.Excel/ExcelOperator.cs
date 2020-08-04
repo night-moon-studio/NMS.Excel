@@ -198,9 +198,9 @@ public class ExcelOperator<TEntity>
 
         StringBuilder excelBody = new StringBuilder();
         excelBody.AppendLine($"var list = new List<{typeof(TEntity).GetDevelopName()}>(arg1.LastRowNum);");
-        excelBody.AppendLine($"var tempNullableValue = String.Empty;");
         excelBody.AppendLine(@"for(int i = 1;i<=arg1.LastRowNum;i+=1){");
         excelBody.AppendLine("var row = arg1.GetRow(i);");
+        excelBody.AppendLine($"var tempCell = row.GetCell(0);");
         excelBody.AppendLine($"var instance = new {typeof(TEntity).GetDevelopName()}();");
         foreach (var item in _fields)
         {
@@ -229,9 +229,32 @@ public class ExcelOperator<TEntity>
 
                     if (prop.PropertyType.IsGenericType)
                     {
-                        excelBody.AppendLine($"tempNullableValue = row.GetCell(arg2[{item.Value}]).StringCellValue;");
-                        excelBody.AppendLine($"if(string.IsNullOrEmpty(tempNullableValue)){{ instance.{item.Key} = null; }}");
-                        excelBody.AppendLine($"else{{instance.{item.Key} = Convert.To{prop.PropertyType.GetGenericArguments()[0].Name}(tempNullableValue);}}");
+                        excelBody.AppendLine($"tempCell = row.GetCell(arg2[{item.Value}]);");
+                        excelBody.AppendLine($"if(tempCell == null){{ instance.{item.Key} = null; }}");
+                        excelBody.AppendLine("else{");
+                        var eleType = prop.PropertyType.GetGenericArguments()[0];
+                        if (eleType == typeof(string))
+                        {
+                            excelBody.AppendLine($"instance.{item.Key} = tempCell.StringCellValue;");
+                        }
+                        else if (eleType == typeof(DateTime))
+                        {
+                            excelBody.AppendLine($"instance.{item.Key} = tempCell.DateCellValue;");
+                        }
+                        else if (eleType == typeof(bool))
+                        {
+                            excelBody.AppendLine($"instance.{item.Key} = tempCell.BooleanCellValue;");
+
+                        }
+                        else if (eleType == typeof(double))
+                        {
+                            excelBody.AppendLine($"instance.{item.Key} = tempCell.NumericCellValue;");
+                        }
+                        else
+                        {
+                            excelBody.AppendLine($"instance.{item.Key} = Convert.To{eleType.Name}(tempCell.NumericCellValue);");
+                        }
+                        excelBody.Append('}');
                     }
                     else
                     {
@@ -267,6 +290,32 @@ public class ExcelOperator<TEntity>
 
     }
 
+    //public static (ISheet,int[]) Get(string filePath, int sheetPage)
+    //{
+
+    //    using (var builder = new ExcelBuilder(filePath))
+    //    {
+
+    //        var indexs = new int[_mappers.Count];
+    //        var sheet = builder[sheetPage];
+    //        var row = sheet.GetRow(0);
+    //        for (int i = 0; i < row.LastCellNum; i += 1)
+    //        {
+
+    //            if (_reverser_mappers.TryGetValue(row.GetCell(i).StringCellValue, out var field))
+    //            {
+    //                if (_fields.TryGetValue(field, out var value))
+    //                {
+    //                    indexs[value] = i;
+    //                }
+    //            }
+
+    //        }
+    //        return (sheet, indexs);
+
+    //    }
+
+    //}
 
     public static IEnumerable<TEntity> FileToEntities(string filePath, int sheetPage)
     {
